@@ -1,0 +1,175 @@
+<!---
+A basic web page containing contents delivered by an Arduino web server.
+
+Everything within this text file is written to the Arduino's memory via an SD card, which is then printed. 
+
+By writing our HTML contents here, we can free up the Arduino to do other things without overloading it. We also do not have to worry about escape characters, or needing to repeat 'client.println' over and over again. 
+
+This is simply a prototype, hence why it's quite messy. Note the lack of <html> and <head> - these are handled directly within the Arduino. 
+-->
+
+
+<!-- General styling for the page -->
+<style>
+    body {
+      background-color: black;
+      margin:0px;
+      cursor:pointer !important;
+    }
+    p {
+      font-family: sans-serif;
+      color: white;
+      font-size: 3em;
+      text-align:center;
+      margin:0px;
+      margin-top:25px;
+    }
+  .outerdiv {
+  display:flex;
+  flex-wrap:wrap;
+  }
+  
+  a {
+    all:unset;
+    width:50%;
+    height:50vh;
+  }
+  
+   /* Style for the submit button */
+    button {
+      padding: 10px 20px; /* Add padding for better appearance */
+      font-size: 16px; /* Set the font size */
+      border-radius: 5px; /* Add some border radius for rounded corners */
+      border: none; /* Remove the border */
+  
+      cursor: pointer; /* Add a pointer cursor on hover */
+    }
+  
+     #digitInput {
+      width: 70%; /* Set the width of the input field */
+      padding: 10px; /* Add some padding for better appearance */
+      font-size: 16px; /* Set the font size */
+      border-radius: 5px; /* Add some border radius for rounded corners */
+      border: 1px solid #ccc; /* Add a border for better visibility */
+      box-sizing: border-box; /* Make sure padding and border are included in the width */
+    }
+  
+  
+  
+  
+  
+  input {
+    width:25vw;
+  }
+  
+  .fa-solid {
+  color:white;
+  }
+  
+  .innerdiv {
+  height:49vh;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  }
+  
+  #red {
+    background-color:rgb(186, 0, 0);
+  }
+  
+  #green {
+    background-color:rgb(0, 96, 0);
+  }
+  
+  #orange {
+      background-color:rgb(255, 132, 0);
+  }
+  
+  
+  .innerdiv:active {
+    background-color:grey !important;
+    transition:0.5s;
+  }
+  
+  </style>
+  
+  <!-- Loading the Font Awesome Library to provide our icons -->
+  <script src="https://kit.fontawesome.com/bf64e8a004.js" crossorigin="anonymous"></script>
+  
+  <div style="position: relative;">
+<iframe style="width:100%; height:500px;" src="https://www.youtube.com/embed/live_stream?channel=UCUZ-1HN3x8a3Zc7qm7sTFWQ"  frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>  
+
+  
+  <div class="outerdiv">
+  <a onclick="sendRequest('/U')">  <!-- Running the sendRequest function when clicked -->
+    <div class="innerdiv" id="green" >
+      <i class="fa-solid fa-unlock fa-5x"></i>
+      <p> Unlock Door </p>
+    </div>
+  </a>
+  
+  <a onclick="sendRequest('/L')">  <!-- Running the sendRequest function when clicked -->
+    <div class="innerdiv" id="red"> 
+      <i class="fa-solid fa-lock fa-5x"></i>
+      <p> Lock Door </p>
+    </div>
+  </a>
+  
+  </div>
+    
+      <div class="innerdiv" id="orange">
+      <p style="padding-bottom:25px;"> Change Unlock Code </p>
+          <div style="display:flex; flex-direction:row;" >
+              <input style="margin-right:25px;" type="text" id="digitInput" placeholder="Enter 4 digits"> 
+              <button onclick="sendNewPasscode()">Submit</button>  <!-- Running the sendNewPasscode function when clicked -->
+          </div>
+  
+      </div>
+  
+  
+    
+  
+  <script>
+  
+  // This is a general function to send our relevant HTTP requests with a particular endpoint.
+  function sendRequest(endpoint) {
+  // Make an AJAX request to the specified endpoint
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', endpoint, true);
+  xhr.onload = function () {
+  
+  // Log to console the status of the AJAX request.
+    if (xhr.status >= 200 && xhr.status < 300) {
+      // Request was successful
+      console.log(xhr.responseText); 
+    } else {
+      console.error('Request failed. Status: ' + xhr.status);
+    }
+  };
+  xhr.onerror = function () {
+    console.error('Request failed. Connection error');
+  };
+  xhr.send();
+  }
+  
+  // This is a function to send the new passcode entered in the input field
+  function sendNewPasscode() {
+      var newPasscode = document.getElementById('digitInput').value;
+      if (newPasscode.length === 4) { // Check if the input contains 4 digits
+          sendRequest('/passcode=' + newPasscode); // Send the new passcode as part of the request
+  
+          // Display confirmation alert and clear input field
+          alert('Passcode changed!');
+          document.getElementById('digitInput').value = ''; // Clear the input field
+      } else {
+          alert('Please enter exactly 4 digits for the new passcode.');
+      }
+  }
+  
+  
+  </script>
+  </body>
+  
